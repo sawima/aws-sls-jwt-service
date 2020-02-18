@@ -1,0 +1,9 @@
+#post auth
+# POST https://api.kimatech.xyz/jwt/
+POST https://tgrp7muwyb.execute-api.us-west-1.amazonaws.com/dev/auth
+
+Content-Type: application/json
+{
+    "account":"kimademo",
+    "password":"demopwd"
+} 

@@ -1,0 +1,36 @@
+service: aws-sls-jwt-service
+
+frameworkVersion: '>=1.28.0 <2.0.0'
+
+provider:
+  name: aws
+  runtime: go1.x
+
+# you can overwrite defaults here
+  stage: dev
+  region: us-west-1
+  environment:
+    DYNAMODB_TABLE: applications
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+functions:
+  auth:
+    handler: bin/jwt-auth
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+  authorize:
+    handler: bin/jwt-verify
