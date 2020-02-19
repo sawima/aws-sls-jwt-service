@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"strings"
 
@@ -64,41 +63,54 @@ func handler(request events.APIGatewayCustomAuthorizerRequest) (events.APIGatewa
 			log.Println(err)
 			// return &verifyInfo{IsValid: false, Account: "", AppName: ""}, errors.New("signature is invalid")
 			log.Println("error printout and return custome response")
-			return events.APIGatewayCustomAuthorizerResponse{}, errors.New("signature token is invalid")
+			// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("signature token is invalid")
+			return generatePolicy("user", "Deny", request.MethodArn), nil
 		}
 		log.Printf("%v", claims)
 		if token.Valid {
 			// return &verifyInfo{IsValid: true, Account: claims.Account, AppName: claims.AppName}, nil
-			return generatePolicy("user", "Allow", request.MethodArn), nil
+			apiandpath := strings.Split(request.MethodArn, "/")
+			resource := strings.Join(apiandpath[0:1], "/")
+			resource += "/*"
+			return generatePolicy("user", "Allow", resource), nil
 		} else if ve, ok := err.(*jwt.ValidationError); ok {
 			log.Println("validation error**********")
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 				log.Println("That's not even a token")
+				return generatePolicy("user", "Deny", request.MethodArn), nil
 			} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
 				// Token is either expired or not active yet
 				log.Println("Expired token")
+				return generatePolicy("user", "Deny", request.MethodArn), nil
 			} else {
 				log.Println("Expired token,any where")
+				return generatePolicy("user", "Deny", request.MethodArn), nil
 			}
 			// return &verifyInfo{IsValid: false}, errors.New("Token is Expired")
-			return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Token is Expired")
+			//return generatePolicy("user", "Allow", request.MethodArn), nil
+			// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Token is Expired")
 		} else {
 			log.Println("Expired token")
 			// return &verifyInfo{IsValid: false}, errors.New("Token is Expired")
-			return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Token is Expired")
+			return generatePolicy("user", "Deny", request.MethodArn), nil
+			// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Token is Expired")
 		}
 	} else {
 		log.Println("Token is empty")
 		// return &verifyInfo{IsValid: false}, errors.New("No Token Provided")
-		return events.APIGatewayCustomAuthorizerResponse{}, errors.New("No Token Provided")
+		return generatePolicy("user", "deny", request.MethodArn), nil
+		// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("No Token Provided")
 
 	}
 
-	// if bearerToken != "hello" {
-	// 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Unauthorized")
+	// // if bearerToken != "hello" {
+	// // 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Unauthorized")
+	// // }
+	// if tokenStr != "" {
+	// 	// return generatePolicy("user", "Allow", request.MethodArn), nil
+	// 	return generatePolicy("user", "Allow", "*"), nil
 	// }
-
-	// return generatePolicy("user", "Allow", request.MethodArn), nil
+	// return generatePolicy("user", "Deny", request.MethodArn), nil
 }
 
 func generatePolicy(principalID, effect, resource string) events.APIGatewayCustomAuthorizerResponse {

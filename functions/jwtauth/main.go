@@ -195,7 +195,7 @@ func checkPasswordHash(password, hash string) bool {
 func userFetchToken(ctx context.Context, in userAuthRequest) (ReturnToken, error) {
 	// pemFile := getPemFile()
 	log.Println("start fetch token")
-	pemFile := []byte("thisisthefoodunionencrptstring")
+	pemFile := []byte("thisisthekimatechtokenstring")
 	log.Println("input value")
 	log.Println(in.Account)
 	log.Println(in.Passwd)

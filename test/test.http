@@ -1,9 +1,37 @@
 #post auth
 # POST https://api.kimatech.xyz/jwt/
-POST https://tgrp7muwyb.execute-api.us-west-1.amazonaws.com/dev/auth
+POST https://tgrp7muwyb.execute-api.us-west-1.amazonaws.com/dev/
 
 Content-Type: application/json
 {
     "account":"kimademo",
     "password":"demopwd"
 } 
+
+
+@authtoken = Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50Ijoia2ltYWRlbW8iLCJhcHBuYW1lIjoibGFtYmRhZGVtbyIsImV4cCI6MTU4OTIxMDE4MX0.6xdoPiLipGtTSRRTHciS6rInVVRqiVd_nktN8cFIl3Q
+#post auth
+POST https://api.kimatech.xyz/auth
+Content-Type: application/json
+
+{
+    "account":"vssapp",
+    "password":"foodunion"
+} 
+###
+
+#without auth
+GET https://api.lakto.cn/kima/hello
+###
+
+#auth hi
+GET https://api.lakto.cn/kima/hi
+Authorization: {{authtoken}}
+
+# ###
+# GET https://api.lakto.cn/kima/me
+# Authorization: {{authtoken}}
+
+###
+GET https://api.lakto.cn/kima/kdlogin
+Authorization: {{authtoken}}
