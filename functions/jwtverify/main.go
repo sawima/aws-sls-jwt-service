@@ -61,14 +61,11 @@ func handler(request events.APIGatewayCustomAuthorizerRequest) (events.APIGatewa
 		if err != nil {
 			log.Println("(()(*)(*&*(*&*(*&")
 			log.Println(err)
-			// return &verifyInfo{IsValid: false, Account: "", AppName: ""}, errors.New("signature is invalid")
 			log.Println("error printout and return custome response")
-			// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("signature token is invalid")
 			return generatePolicy("user", "Deny", request.MethodArn), nil
 		}
 		log.Printf("%v", claims)
 		if token.Valid {
-			// return &verifyInfo{IsValid: true, Account: claims.Account, AppName: claims.AppName}, nil
 			apiandpath := strings.Split(request.MethodArn, "/")
 			resource := strings.Join(apiandpath[0:1], "/")
 			resource += "/*"
@@ -86,31 +83,15 @@ func handler(request events.APIGatewayCustomAuthorizerRequest) (events.APIGatewa
 				log.Println("Expired token,any where")
 				return generatePolicy("user", "Deny", request.MethodArn), nil
 			}
-			// return &verifyInfo{IsValid: false}, errors.New("Token is Expired")
-			//return generatePolicy("user", "Allow", request.MethodArn), nil
-			// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Token is Expired")
 		} else {
 			log.Println("Expired token")
-			// return &verifyInfo{IsValid: false}, errors.New("Token is Expired")
 			return generatePolicy("user", "Deny", request.MethodArn), nil
-			// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Token is Expired")
 		}
 	} else {
 		log.Println("Token is empty")
-		// return &verifyInfo{IsValid: false}, errors.New("No Token Provided")
 		return generatePolicy("user", "deny", request.MethodArn), nil
-		// return events.APIGatewayCustomAuthorizerResponse{}, errors.New("No Token Provided")
 
 	}
-
-	// // if bearerToken != "hello" {
-	// // 	return events.APIGatewayCustomAuthorizerResponse{}, errors.New("Unauthorized")
-	// // }
-	// if tokenStr != "" {
-	// 	// return generatePolicy("user", "Allow", request.MethodArn), nil
-	// 	return generatePolicy("user", "Allow", "*"), nil
-	// }
-	// return generatePolicy("user", "Deny", request.MethodArn), nil
 }
 
 func generatePolicy(principalID, effect, resource string) events.APIGatewayCustomAuthorizerResponse {
@@ -130,50 +111,6 @@ func generatePolicy(principalID, effect, resource string) events.APIGatewayCusto
 	}
 	return authResponse
 }
-
-// func authToken(ctx context.Context, in *accessToken) (*verifyInfo, error) {
-// 	// return &verifyInfo{IsValid: false}, nil
-// 	log.Println("Receive client request!!!")
-// 	tokenStr := in.Token
-// 	pemFile := []byte("thisisthefoodunionencrptstring")
-// 	claims := myCustomClaims{}
-// 	if tokenStr != "" {
-// 		log.Println(tokenStr)
-// 		token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (interface{}, error) {
-// 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-// 				log.Printf("Unexpected signing method: %v", token.Header["alg"])
-// 			}
-// 			return pemFile, nil
-// 		})
-// 		log.Println("validate any where")
-// 		if err != nil {
-// 			log.Println("(()(*)(*&*(*&*(*&")
-// 			log.Println(err)
-// 			return &verifyInfo{IsValid: false, Account: "", AppName: ""}, errors.New("signature is invalid")
-// 		}
-// 		log.Printf("%v", claims)
-// 		if token.Valid {
-// 			return &verifyInfo{IsValid: true, Account: claims.Account, AppName: claims.AppName}, nil
-// 		} else if ve, ok := err.(*jwt.ValidationError); ok {
-// 			log.Println("validation error**********")
-// 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-// 				log.Println("That's not even a token")
-// 			} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-// 				// Token is either expired or not active yet
-// 				log.Println("Expired token")
-// 			} else {
-// 				log.Println("Expired token,any where")
-// 			}
-// 			return &verifyInfo{IsValid: false}, errors.New("Token is Expired")
-// 		} else {
-// 			log.Println("Expired token")
-// 			return &verifyInfo{IsValid: false}, errors.New("Token is Expired")
-// 		}
-// 	} else {
-// 		log.Println("Token is empty")
-// 		return &verifyInfo{IsValid: false}, errors.New("No Token Provided")
-// 	}
-// }
 
 func main() {
 	lambda.Start(handler)
