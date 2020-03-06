@@ -1,8 +1,8 @@
 #post auth
 # POST https://api.kimatech.xyz/jwt/
-POST https://tgrp7muwyb.execute-api.us-west-1.amazonaws.com/dev/
-
+POST https://api.kimatech.xyz/auth
 Content-Type: application/json
+
 {
     "account":"kimademo",
     "password":"demopwd"
@@ -35,3 +35,7 @@ Authorization: {{authtoken}}
 ###
 GET https://api.lakto.cn/kima/kdlogin
 Authorization: {{authtoken}}
+
+###
+GET https://api.kimatech.xyz/dev/hello
+Authorization: Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50Ijoia2ltYWRlbW8iLCJhcHBuYW1lIjoibGFtYmRhZGVtbyIsImV4cCI6MTU4OTI4MTI2Mn0.80mrnu2AV7kHRqIXADf6KVr4r2uM0PdUthIdH4T9jYU

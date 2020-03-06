@@ -15,19 +15,9 @@ type config struct {
 	ConnStr          string
 	DBDriver         string
 }
-
-var serverconfig = &config{
-	PemFilePath:      "/.resource/jwtapp.rsa",
-	SimpleDefaultPem: "thisisthesimplesecretkey",
-	// ConnStr:          "mongodb://authuser:foodunion2019@dds-uf6489fcd43470841611-pub.mongodb.rds.aliyuncs.com:3717,dds-uf6489fcd43470842606-pub.mongodb.rds.aliyuncs.com:3717/platform?replicaSet=mgset-14040555",
-	ConnStr:  "mongodb://authuser:foodunion2019@dds-uf6489fcd43470841611-pub.mongodb.rds.aliyuncs.com:3717,dds-uf6489fcd43470842606-pub.mongodb.rds.aliyuncs.com:3717/platform?replicaSet=mgset-14040555",
-	DBDriver: "mongo",
-}
-
 type accessToken struct {
 	Token string `json:"token"`
 }
-
 type verifyInfo struct {
 	IsValid bool   `json:"isvalid"`
 	Account string `json:"account"`
