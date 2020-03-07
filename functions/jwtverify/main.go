@@ -9,21 +9,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-type config struct {
-	PemFilePath      string
-	SimpleDefaultPem string
-	ConnStr          string
-	DBDriver         string
-}
-type accessToken struct {
-	Token string `json:"token"`
-}
-type verifyInfo struct {
-	IsValid bool   `json:"isvalid"`
-	Account string `json:"account"`
-	AppName string `json:"appname"`
-}
-
 type myCustomClaims struct {
 	Account string `json:"account"`
 	AppName string `json:"appname"`
@@ -47,11 +32,8 @@ func handler(request events.APIGatewayCustomAuthorizerRequest) (events.APIGatewa
 			}
 			return pemFile, nil
 		})
-		log.Println("validate any where")
 		if err != nil {
-			log.Println("(()(*)(*&*(*&*(*&")
 			log.Println(err)
-			log.Println("error printout and return custome response")
 			return generatePolicy("user", "Deny", request.MethodArn), nil
 		}
 		log.Printf("%v", claims)
@@ -61,12 +43,9 @@ func handler(request events.APIGatewayCustomAuthorizerRequest) (events.APIGatewa
 			resource += "/*"
 			return generatePolicy("user", "Allow", resource), nil
 		} else if ve, ok := err.(*jwt.ValidationError); ok {
-			log.Println("validation error**********")
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-				log.Println("That's not even a token")
 				return generatePolicy("user", "Deny", request.MethodArn), nil
 			} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-				// Token is either expired or not active yet
 				log.Println("Expired token")
 				return generatePolicy("user", "Deny", request.MethodArn), nil
 			} else {
