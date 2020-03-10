@@ -1,41 +1,36 @@
-#post auth
-# POST https://api.kimatech.xyz/jwt/
+@authtoken = Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiYXBwMTIzIiwiYXBwbmFtZSI6ImFwcDEyMyIsImV4cCI6MTU4Mzg0NDQxMH0.f5OYYI5SDr_fe1gNWY5nK-vdjPkRndbPuWX6MXOzB70
+###
+POST https://api.api.kimatech.xyz/auth/init
+
+###
+
 POST https://api.kimatech.xyz/auth
 Content-Type: application/json
 
 {
-    "account":"kimademo",
-    "password":"demopwd"
+    "account":"kimatech",
+    "password":"oX9tMwONgheJCPubRBtt8hfA72o="
 } 
 
-
-@authtoken = Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50Ijoia2ltYWRlbW8iLCJhcHBuYW1lIjoibGFtYmRhZGVtbyIsImV4cCI6MTU4OTIxMDE4MX0.6xdoPiLipGtTSRRTHciS6rInVVRqiVd_nktN8cFIl3Q
-#post auth
-POST https://api.kimatech.xyz/auth
-Content-Type: application/json
-
-{
-    "account":"vssapp",
-    "password":"foodunion"
-} 
 ###
 
-#without auth
-GET https://api.lakto.cn/kima/hello
-###
-
-#auth hi
-GET https://api.lakto.cn/kima/hi
-Authorization: {{authtoken}}
-
-# ###
-# GET https://api.lakto.cn/kima/me
-# Authorization: {{authtoken}}
+POST https://api.kimatech.xyz/auth/update
 
 ###
-GET https://api.lakto.cn/kima/kdlogin
+
+POST https://api.kimatech.xyz/auth/update
 Authorization: {{authtoken}}
 
 ###
 GET https://api.kimatech.xyz/dev/hello
-Authorization: Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50Ijoia2ltYWRlbW8iLCJhcHBuYW1lIjoibGFtYmRhZGVtbyIsImV4cCI6MTU4OTI4MTI2Mn0.80mrnu2AV7kHRqIXADf6KVr4r2uM0PdUthIdH4T9jYU
+Authorization: {{authtoken}}
+
+###
+GET https://api.kimatech.xyz/dev/world
+Authorization: {{authtoken}}
+
+###
+
+GET https://api.kimatech.xyz/auth/update
+Authorization: {{authtoken}}
+#

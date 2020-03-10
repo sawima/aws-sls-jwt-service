@@ -7,6 +7,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/sawima/aws-sls-jwt-service/functions/layers/helpers"
+
+	"fmt"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,9 +18,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	jwt "github.com/dgrijalva/jwt-go"
-	"golang.org/x/crypto/bcrypt"
-
-	"fmt"
 )
 
 //APIResponse aws api gw proxy response
@@ -48,16 +49,12 @@ type userAuthRequest struct {
 
 //App model definition
 type App struct {
-	Appid       string `json:"appid"`
-	Securitykey string `json:"securitykey"`
-	Hashedkey   string `json:"hashedkey"`
-	Appname     string `json:"appname"`
+	Appid     string `json:"appid"`
+	Hashedkey string `json:"hashedkey"`
+	Appname   string `json:"appname"`
 }
 
-func dbAuth(appid, securitykey string) (app *App, authIndex bool) {
-
-	log.Println("appid", "securitykey")
-	log.Println(appid, securitykey)
+func dbAuth(appid, password string) (app *App, authIndex bool) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -91,12 +88,12 @@ func dbAuth(appid, securitykey string) (app *App, authIndex bool) {
 
 	fmt.Printf("%v", tapp)
 
-	if tapp.Securitykey == "" {
+	if tapp.Hashedkey == "" {
 		fmt.Println("Could not find target app")
 		return nil, false
 	}
 
-	if tapp.Securitykey == securitykey {
+	if helpers.CheckPasswordHash(password, tapp.Hashedkey) {
 		return &tapp, true
 	}
 
@@ -112,10 +109,10 @@ func verify(account, passwd string) (*App, bool) {
 // 	return string(bytes), err
 // }
 
-func checkPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
+// func checkPasswordHash(password, hash string) bool {
+// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+// 	return err == nil
+// }
 
 //UserFetchToken RPC mothod for user request new access token
 func userFetchToken(ctx context.Context, in userAuthRequest) (ReturnToken, int, error) {
@@ -131,7 +128,7 @@ func userFetchToken(ctx context.Context, in userAuthRequest) (ReturnToken, int, 
 			AppName: user.Appname,
 			StandardClaims: jwt.StandardClaims{
 				// ExpiresAt: time.Now().Add(time.Hour * 2000).Unix(),
-				ExpiresAt: time.Now().Add(time.Second * 1800).Unix(),
+				ExpiresAt: time.Now().Add(time.Hour * 1800).Unix(),
 			},
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -56,7 +56,7 @@ functions:
           path: /update
           method: post
           cors: true
-
+          authorizer: authorize
 
 resources:
   Resources:
