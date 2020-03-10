@@ -58,10 +58,6 @@ func dbAuth(appid, securitykey string) (app *App, authIndex bool) {
 
 	log.Println("appid", "securitykey")
 	log.Println(appid, securitykey)
-	// snippet-start:[dynamodb.go.read_item.session]
-	// Initialize a session that the SDK will use to load
-	// credentials from the shared credentials file ~/.aws/credentials
-	// and region from the shared configuration file ~/.aws/config.
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))

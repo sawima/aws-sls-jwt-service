@@ -4,6 +4,10 @@ build: gomodgen
 	export GO111MODULE=on
 	env GOOS=linux go build -ldflags="-s -w" -o bin/jwt-auth functions/jwtauth/main.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/jwt-verify functions/jwtverify/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/defaultapp functions/defaultapp/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/api-proxy functions/apiproxy/main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/jwtaccount functions/jwtaccount/main.go
+
 
 # help:
 # 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

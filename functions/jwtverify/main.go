@@ -58,7 +58,7 @@ func handler(request events.APIGatewayCustomAuthorizerRequest) (events.APIGatewa
 		}
 	} else {
 		log.Println("Token is empty")
-		return generatePolicy("user", "deny", request.MethodArn), nil
+		return generatePolicy("user", "Deny", request.MethodArn), nil
 
 	}
 }
@@ -77,6 +77,12 @@ func generatePolicy(principalID, effect, resource string) events.APIGatewayCusto
 				},
 			},
 		}
+	}
+	// Optional output with custom properties of the String, Number or Boolean type.
+	authResponse.Context = map[string]interface{}{
+		"stringKey":  "stringval",
+		"numberKey":  123,
+		"booleanKey": true,
 	}
 	return authResponse
 }

@@ -2,23 +2,29 @@ service: aws-sls-jwt-service
 
 frameworkVersion: '>=1.28.0 <2.0.0'
 
-custom:
-  DYNAMODB_TABLE: users
+# custom:
+#   DYNAMODB_TABLE: users
 provider:
   name: aws
   runtime: go1.x
 # you can overwrite defaults here
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-west-1'}
-  # environment:
-  #   DYNAMODB_TABLE: applications
+  environment:
+    DYNAMODB_TABLE: users
+
 
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
         - dynamodb:GetItem
+        - dynamodb:PutItem
         - dynamodb:UpdateItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.DYNAMODB_TABLE}"
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 
 package:
@@ -37,13 +43,27 @@ functions:
           cors: true
   authorize:
     handler: bin/jwt-verify
+  defaultapp:
+    handler: bin/defaultapp
+    events:
+      - http:
+          path: /init
+          method: post
+  jwtaccount:
+    handler: bin/jwtaccount
+    events:
+      - http:
+          path: /update
+          method: post
+          cors: true
+
 
 resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
         AttributeDefinitions:
           - AttributeName: appid
             AttributeType: S
