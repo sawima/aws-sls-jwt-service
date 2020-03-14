@@ -18,6 +18,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	jwt "github.com/dgrijalva/jwt-go"
+
+	models "github.com/sawima/aws-sls-jwt-service/functions/layers/models"
 )
 
 //APIResponse aws api gw proxy response
@@ -28,12 +30,6 @@ type APIRequest events.APIGatewayProxyRequest
 type accessToken struct {
 	Token string
 	Scope string
-}
-
-type myCustomClaims struct {
-	Account string `json:"account"`
-	AppName string `json:"appname"`
-	jwt.StandardClaims
 }
 
 //ReturnToken return token to the request
@@ -47,22 +43,27 @@ type userAuthRequest struct {
 	Passwd  string `json:"password"`
 }
 
-//App model definition
-type App struct {
-	Appid     string `json:"appid"`
-	Hashedkey string `json:"hashedkey"`
-	Appname   string `json:"appname"`
-}
+// //App model definition
+// type App struct {
+// 	Appid     string     `json:"appid"`
+// 	Hashedkey string     `json:"hashedkey"`
+// 	Context   Appcontext `json:"context"`
+// }
 
-func dbAuth(appid, password string) (app *App, authIndex bool) {
+// //Appcontext is the context info for applications
+// type Appcontext struct {
+// 	Appname   string     `json:"appname"`
+// 	UUID   string `json:"uuid"`
+// 	Indicatekey string `json:"indicatekey"`
+// }
+
+func dbAuth(appid, password string) (app *models.App, authIndex bool) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
 	// Create DynamoDB client
 	svc := dynamodb.New(sess)
-	log.Println("dynamodb connection status")
-	log.Println(svc)
 	tableName := "users"
 	result, err := svc.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String(tableName),
@@ -76,56 +77,37 @@ func dbAuth(appid, password string) (app *App, authIndex bool) {
 		fmt.Println(err.Error())
 		return nil, false
 	}
-
-	fmt.Printf("%v", result.Item)
-	tapp := App{}
-
+	tapp := models.App{}
 	err = dynamodbattribute.UnmarshalMap(result.Item, &tapp)
-
 	if err != nil {
-		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+		log.Printf("Failed to unmarshal Record, %v", err)
 	}
-
-	fmt.Printf("%v", tapp)
-
 	if tapp.Hashedkey == "" {
-		fmt.Println("Could not find target app")
+		log.Println("Could not find target app")
 		return nil, false
 	}
-
 	if helpers.CheckPasswordHash(password, tapp.Hashedkey) {
 		return &tapp, true
 	}
-
 	return nil, false
 }
 
-func verify(account, passwd string) (*App, bool) {
+func verify(account, passwd string) (*models.App, bool) {
 	return dbAuth(account, passwd)
 }
 
-// func HashPassword(password string) (string, error) {
-// 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-// 	return string(bytes), err
-// }
-
-// func checkPasswordHash(password, hash string) bool {
-// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-// 	return err == nil
-// }
-
 //UserFetchToken RPC mothod for user request new access token
+// {
+//     "account":"kimatech",
+//     "password":"6UN6WwPhhgEz1oASmvl_0Vo3lIU="
+// }
 func userFetchToken(ctx context.Context, in userAuthRequest) (ReturnToken, int, error) {
 	// pemFile := getPemFile()
-	log.Println("start fetch token")
 	pemFile := []byte("thisisthekimatechtokenstring")
-	log.Println("input value")
-	log.Println(in.Account)
-	log.Println(in.Passwd)
-	if user, ok := verify(in.Account, in.Passwd); ok {
-		claims := myCustomClaims{
-			Account: user.Appid,
-			AppName: user.Appname,
+	if app, ok := verify(in.Account, in.Passwd); ok {
+		claims := models.MyCustomClaims{
+			Appid:   app.Appid,
+			Context: app.Context,
 			StandardClaims: jwt.StandardClaims{
 				// ExpiresAt: time.Now().Add(time.Hour * 2000).Unix(),
 				ExpiresAt: time.Now().Add(time.Hour * 1800).Unix(),
@@ -153,7 +135,6 @@ func LambdaGenerateToken(ctx context.Context, request APIRequest) (APIResponse, 
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("function run to end")
 	tokenJSONStr, _ := json.Marshal(token)
 	resp := APIResponse{
 		StatusCode:      statusCode,

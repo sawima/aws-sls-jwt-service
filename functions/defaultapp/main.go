@@ -54,10 +54,10 @@ func checkDefaultAppAccount() error {
 		newItem := models.App{
 			Appid:     defaultAppid,
 			Hashedkey: helpers.GenerateHashPassword(defaultPasswd),
-			Appname:   defaultAppid,
 			Context: models.Appcontext{
-				Org:   defaultAppid,
-				Orgid: defaultAppid,
+				Appname:       defaultAppid,
+				UUID:          defaultAppid,
+				Indicatevalue: defaultAppid,
 			},
 		}
 		newDefaultAppItem, _ := dynamodbattribute.MarshalMap(newItem)
@@ -83,7 +83,7 @@ func checkDefaultAppAccount() error {
 type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (Response, error) {
+func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	err := checkDefaultAppAccount()
 	if err != nil {
 		return Response{StatusCode: 404}, err

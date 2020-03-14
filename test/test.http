@@ -1,4 +1,4 @@
-@authtoken = Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50Ijoia2ltYXRlY2giLCJhcHBuYW1lIjoia2ltYXRlY2giLCJleHAiOjE1OTA0NzUxMjJ9.LWD8jkeIrlmM6xQRx-8FdTOh_b7PPbY0ZKRpUtp-nas
+@authtoken = Baerer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBpZCI6ImtpbWF0ZWNoIiwiQ29udGV4dCI6eyJhcHBuYW1lIjoia2ltYXRlY2giLCJ1dWlkIjoia2ltYXRlY2giLCJpbmRpY2F0ZXZhbHVlIjoia2ltYXRlY2gifSwiZXhwIjoxNTkwNjU5OTcyfQ.vX7FMZ1i6nDwztfMjthUTkBMYnvd1h0YYKEYU4Ved84
 ###
 POST https://api.kimatech.xyz/auth/init
 
@@ -9,12 +9,8 @@ Content-Type: application/json
 
 {
     "account":"kimatech",
-    "password":"kimapasswd"
+    "password":"ZmvEiVTAEKrnxEWl2Br5jV1jljo="
 } 
-
-###
-
-POST https://api.kimatech.xyz/auth/account/update
 
 ###
 
@@ -25,6 +21,10 @@ Authorization: {{authtoken}}
 POST https://api.kimatech.xyz/auth/account/update
 Authorization: {{authtoken}}
 
+###
+
+GET  https://api.kimatech.xyz/auth/apidemo
+Authorization: {{authtoken}}
 
 ###
 POST https://api.kimatech.xyz/auth/account/updateapp
@@ -32,7 +32,7 @@ Authorization: {{authtoken}}
 Content-Type: application/json
 
 {
-    "appid":"appid"
+    "appid":"kimatech"
 } 
 
 
@@ -44,6 +44,19 @@ Content-Type: application/json
 {
 	"appid":"vssapp"
 }
+
+###
+POST https://api.kimatech.xyz/auth/account/new
+Authorization: {{authtoken}}
+Content-Type: application/json
+
+{
+	"appname":"demoapp",
+    "context":{
+        "org":"kimacloud",
+        "orgid":"kd"
+    }
+}
 ###
 GET https://api.kimatech.xyz/dev/hello
 Authorization: {{authtoken}}
@@ -53,7 +66,3 @@ GET https://api.kimatech.xyz/dev/world
 Authorization: {{authtoken}}
 
 ###
-
-GET https://api.kimatech.xyz/auth/update
-Authorization: {{authtoken}}
-#

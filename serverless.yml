@@ -49,6 +49,13 @@ functions:
       - http:
           path: /init
           method: post
+  apidemo:
+    handler: bin/api-proxy
+    events:
+      - http:
+          path: /apidemo
+          method: get
+          authorizer: authorize
   jwtaccount:
     handler: bin/jwtaccount
     events:
