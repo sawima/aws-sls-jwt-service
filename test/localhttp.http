@@ -1,0 +1,13 @@
+###
+GET http://localhost:8090/auth/account
+
+###
+POST http://localhost:8090/auth/account/update
+
+###
+POST http://localhost:8090/auth/account/updateapp
+Content-Type: "application/json"
+
+{
+    "appid":"kimatech"
+}

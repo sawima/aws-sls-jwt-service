@@ -52,10 +52,19 @@ functions:
   jwtaccount:
     handler: bin/jwtaccount
     events:
+      # - http:
+      #     path: /update
+      #     method: post
+      #     cors: true
+      #     authorizer: authorize
       - http:
-          path: /update
-          method: post
+          path: account # this matches the base path
+          method: any
           cors: true
+          authorizer: authorize
+      - http:
+          path: account/{any+} # this matches any path, the token 'any' doesn't mean anything special
+          method: ANY
           authorizer: authorize
 
 resources:
